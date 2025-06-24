@@ -1,0 +1,183 @@
+			SWITCH CONFIGURATION
+
+en	//enable
+conf t	//configuration
+
+hostname science and humanities   //hostname changes according to switch's department
+
+line console 0
+password cisco    //user defined
+login 
+exec-timeout 3 0  //3 minutes and 0 seconds time given for a connection(user defined)
+exit
+
+enable password cisco  //user defined
+
+banner motd #unauthorized access#   //message to be displayed if unauthorized access
+
+no ip domain-lookup     //no need to see domain
+
+service password-encryption  //encrypt the password(cisco)
+
+
+SSH CONFIGURATION:
+
+username cisco password cisco   //user defined
+ip domain-name cisco.com        // specify domain name
+crypto key generate rsa general-keys modulus 1024	//cryptography algorithm type(rsa)
+ip ssh version 2
+
+ACL FOR REMOTE ACCESS:
+access-list 2 permit 192.168.10.0 255.255.255.0		//address to be permitted and it's subnet 
+access-list 2 deny any 		// deny access to any other addresses
+
+line vty 0 15
+login local
+transport input ssh
+access-class 2 in
+exit
+
+do wr		// write's the configuration in the switch.
+
+
+
+
+
+
+
+
+
+####VLAN connection####
+
+int  range gig1/0/1-5
+switchport mode trunk
+ex
+do wr
+
+
+##access switch HQ configuration###
+
+
+vlan 10
+name Management
+vlan 20
+name LAN
+vlan 50
+name WLAN
+exit
+
+int range fa0/1-2
+switchport mode trunk
+ex
+
+int range fa0/3-20
+switchport mode access
+switchport access vlan 20
+ex
+
+int range fa0/21-24
+switchport mode access
+switchport access vlan 50
+ex
+
+int range gig0/1-2                  // for management we have changes in configurations
+switchport mode access
+switchport access vlan 199	   // vlan 10
+shut				   // erase "shut" command
+ex
+
+do wr
+
+
+
+
+
+### Access Switch BRANCH Configuration###
+
+
+
+vlan 60
+name BrLAN
+vlan 90
+name BrWLAN
+vlan 199
+name BLACKHOLE
+exit
+
+int range fa0/1-2
+switchport mode trunk
+ex
+
+int range fa0/3-20
+switchport mode access
+switchport access vlan 60
+ex
+
+int range fa0/21-24
+switchport mode access
+switchport access vlan 90
+ex
+
+int range gig0/1-2                  
+switchport mode access
+switchport access vlan 199	   
+shut				  
+ex
+
+do wr
+
+
+
+### BRANCH Multilayer Switch Configuration####
+
+vlan 60
+name BrLAN
+vlan 90
+name BrWLAN
+vlan 199
+name BLACKHOLE
+exit
+
+int range gig1/0/1-4
+switchport mode trunk
+shut
+ex
+
+do wr
+
+
+
+###portfast in all access point and DMZ Switches###
+
+
+int range fa0/3-24		// changes for dmz switch(fa0/2-24)
+spanning-tree portfast
+spanning-tree bpduguard enable
+
+do wr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
